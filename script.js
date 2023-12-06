@@ -6,7 +6,7 @@ let toDoArrId = [];
 const removeElement = function (e) {
   // remove element from toDoArr
   // obtain index
-  const selectedElem = e.target.id; // A1
+  const selectedElem = e.target.id; // D1
   const selectedIndex = selectedElem.slice(1); // 1
   toDoArr.splice(selectedIndex, 1);
   toDoArrId.splice(selectedIndex, 1);
@@ -16,7 +16,7 @@ const removeElement = function (e) {
 // add event listener for button
 const addDeleteListener = function () {
   const deleteElems = document.querySelectorAll(
-    toDoArrId.map((id) => `#${id}`).join(',')
+    toDoArrId.map((id) => `#D${id}`).join(',')
   );
   console.log(deleteElems);
   deleteElems.forEach((deleteElem) => {
@@ -28,9 +28,13 @@ const updateToDo = function () {
   const mainList = document.getElementById('toDoList');
   mainList.innerHTML = '';
   toDoArr.forEach((Task, index) => {
-    const id = `A${index}`;
+    const id = `${index}`;
     toDoArrId.push(id);
-    const listElement = `<li>${Task}<button id="${id}">Delete</button> </li> `;
+    const listElement = `<li>
+    <input id = "C${id}" class="strikethrough" type = "checkbox"> <label for="C${id}" class="checkboxText"> ${Task} </label>
+    <button id="D${id}">Delete</button> 
+    </li> 
+    `;
     mainList.innerHTML += listElement;
   });
   addDeleteListener();

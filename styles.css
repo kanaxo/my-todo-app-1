@@ -3,3 +3,7 @@
   flex-direction: column;
   align-items: center;
 }
+
+.strikethrough:checked + .checkboxText {
+  text-decoration: line-through;
+}
