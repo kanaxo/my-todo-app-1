@@ -10,10 +10,14 @@
   <body>
     <h1>To Do App</h1>
     <div id="todoInput">
-      <label for="Task">Task:</label>
-      <input type="text" id="Task" name="Task" />
-      <button onclick="submitToDo()">Submit</button>
+      <form action="" id="toDoForm">
+        <label for="Task">Task:</label>
+        <input type="text" id="Task" name="Task" />
+        <button type="submit" onclick="submitToDo()">Submit</button>
+      </form>
     </div>
-    <ul id="toDoList"></ul>
+    <div class="toDoListContainer">
+      <ul id="toDoList"></ul>
+    </div>
   </body>
 </html>

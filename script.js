@@ -51,6 +51,14 @@ const submitToDo = function () {
   taskInput.value = '';
 };
 
+// add event listener for submit
+let toDoForm = document.getElementById('toDoForm');
+toDoForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  // handlesubmit
+  submitToDo();
+});
+
 // driver code
 updateToDo();
 console.log(toDoArrId);
