@@ -32,7 +32,7 @@ const updateToDo = function () {
     toDoArrId.push(id);
     const listElement = `<li>
     <input id = "C${id}" class="strikethrough" type = "checkbox"> <label for="C${id}" class="checkboxText"> ${Task} </label>
-    <button id="D${id}">Delete</button> 
+    <button class="btn btn-outline-primary btn-sm" id="D${id}">Delete</button> 
     </li> 
     `;
     mainList.innerHTML += listElement;
