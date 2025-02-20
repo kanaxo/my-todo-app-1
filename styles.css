@@ -20,4 +20,5 @@ ul#toDoList {
 
 .strikethrough:checked + .checkboxText {
   text-decoration: line-through;
+  color: gray;
 }
