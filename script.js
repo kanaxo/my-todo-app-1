@@ -108,6 +108,68 @@ console.log(toDoArrId);
 console.log(...toDoArr);
 
 // Timer
+
+let timeDuration = 25 * 60;
 const timerDisplay = document.querySelector('#timerDisplay');
-function startTimer(duration, display) {}
-console.log(timerDisplay.innerHTML);
+const timerStart = document.querySelector('.startPauseTimer');
+const timerStop = document.querySelector('.stopTimer');
+let timerID;
+let timeStart = false;
+
+const displayTimer = (timeDuration) => {
+  let durationDisplayMin = Math.floor(timeDuration / 60);
+  let durationDisplaySec = timeDuration % 60;
+  let durationDisplay = `${durationDisplayMin}:${
+    durationDisplaySec < 10 ? '0' : ''
+  }${durationDisplaySec}`;
+  timerDisplay.textContent = durationDisplay;
+};
+
+const reduceTimer = () => {
+  if (timeDuration > 0) {
+    timeDuration -= 1;
+    displayTimer(timeDuration);
+  } else {
+    clearInterval(timerID);
+    timerStart.textContent = 'Start!';
+    timeStart = false;
+  }
+};
+
+const startTimer = () => {
+  if (timerStart.textContent === 'Pause!') {
+    timerStart.textContent = 'Start!';
+    timeStart = false;
+    clearInterval(timerID);
+  } else {
+    timerStart.textContent = 'Pause!';
+    timeStart = true;
+    timerID = setInterval(reduceTimer, 1000);
+  }
+  console.log('Timer Start:', timeStart);
+};
+
+const stopTimer = () => {
+  clearInterval(timerID);
+  timeStart = false;
+  timerStart.textContent = 'Start!';
+  timeDuration = 25 * 60;
+  displayTimer(timeDuration);
+};
+
+const addTimerListeners = () => {
+  timerStart.addEventListener('click', (e) => {
+    e.preventDefault();
+    startTimer();
+  });
+
+  timerStop.addEventListener('click', (e) => {
+    e.preventDefault();
+    stopTimer();
+  });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  displayTimer(timeDuration);
+  addTimerListeners();
+});
