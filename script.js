@@ -106,6 +106,14 @@ updateToDo();
 console.log(toDoArrId);
 console.log(...toDoArr);
 
+// Clock
+const displayTime = document.getElementById('timeDisplay');
+
+const showCurrentTime = () => {
+  const now = new Date();
+  displayTime.textContent = now.toLocaleTimeString();
+};
+
 // Timer
 
 let timeDuration;
@@ -223,6 +231,7 @@ const addTimerListeners = () => {
 document.addEventListener('DOMContentLoaded', () => {
   displayTimer(timeDuration);
   addTimerListeners();
+  setInterval(showCurrentTime, 1000);
 });
 
 const validateTimerInput = (timerInputMin, timerInputSec) => {
