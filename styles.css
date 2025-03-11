@@ -22,3 +22,19 @@ ul#toDoList {
   text-decoration: line-through;
   color: gray;
 }
+
+div.timerInputDiv {
+  display: none;
+}
+
+input.timerInput {
+  width: 50px;
+  text-align: center;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+p#errorMsg {
+  color: red;
+  display: none;
+}

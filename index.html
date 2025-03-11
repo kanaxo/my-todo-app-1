@@ -16,6 +16,9 @@
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">TO DO APP</a>
+    </nav>
     <h1>To Do App</h1>
     <div id="todoInput">
       <form action="" id="toDoForm">
@@ -31,7 +34,26 @@
     </div>
     <div class="timerContainer">
       <h3>Pomodoro Timer</h3>
-      <p id="timerDisplay" class="timerCountdown"></p>
+      <div class="timerDivDisplay" id="timerDivDisplay">
+        <p id="timerDisplay" class="timerCountdown"></p>
+      </div>
+      <div class="timerInputDiv" id="timerInputDiv">
+        <input
+          type="text"
+          class="timerInput"
+          id="timerInputMin"
+          maxlength="2"
+        />
+        <input
+          type="text"
+          class="timerInput"
+          id="timerInputSec"
+          maxlength="2"
+        />
+        <button class="setTimer" id="setTimer">Set Timer</button>
+        <p id="errorMsg"></p>
+      </div>
+      <button class="editTimer">Edit</button>
       <button class="startPauseTimer">Start!</button>
       <button class="stopTimer">Stop!</button>
     </div>

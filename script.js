@@ -2,6 +2,7 @@
 
 let toDoArr = [];
 let toDoArrId = [];
+let checkedArray = [];
 
 // localStorage
 const saveToLocalStorage = function () {
@@ -38,8 +39,6 @@ const addDeleteListener = function () {
     btn.addEventListener('click', removeElement);
   });
 };
-
-let checkedArray = [];
 
 // add event listener for checkbox
 const addCheckListener = function () {
@@ -109,12 +108,22 @@ console.log(...toDoArr);
 
 // Timer
 
-let timeDuration = 25 * 60;
+let timeDuration;
+let timeDurationInTimer;
+let pausedTime;
+let timerID;
+let timeStart = false;
+let changeTimerFlag = false;
+timeDuration = 5;
+timeDurationInTimer = timeDuration;
+
 const timerDisplay = document.querySelector('#timerDisplay');
 const timerStart = document.querySelector('.startPauseTimer');
 const timerStop = document.querySelector('.stopTimer');
-let timerID;
-let timeStart = false;
+const timerInputMin = document.querySelector('#timerInputMin');
+const timerInputSec = document.querySelector('#timerInputSec');
+const timerSubmit = document.querySelector('#setTimer');
+const timerEdit = document.querySelector('.editTimer');
 
 const displayTimer = (timeDuration) => {
   let durationDisplayMin = Math.floor(timeDuration / 60);
@@ -126,35 +135,49 @@ const displayTimer = (timeDuration) => {
 };
 
 const reduceTimer = () => {
-  if (timeDuration > 0) {
-    timeDuration -= 1;
-    displayTimer(timeDuration);
+  if (timeDurationInTimer > 0) {
+    timeDurationInTimer--;
+    displayTimer(timeDurationInTimer);
+    console.log('timeDurationInTimer:', timeDurationInTimer);
   } else {
-    clearInterval(timerID);
-    timerStart.textContent = 'Start!';
-    timeStart = false;
+    alert('Timer Ended!');
+    stopTimer();
+    console.log('Timer Start', timeStart);
   }
 };
 
 const startTimer = () => {
-  if (timerStart.textContent === 'Pause!') {
-    timerStart.textContent = 'Start!';
-    timeStart = false;
+  if (timeStart) {
     clearInterval(timerID);
+    timerStart.textContent = 'Start!';
   } else {
     timerStart.textContent = 'Pause!';
-    timeStart = true;
     timerID = setInterval(reduceTimer, 1000);
   }
-  console.log('Timer Start:', timeStart);
+  timeStart = !timeStart;
+  console.log('(start) Timer Start:', timeStart);
 };
 
 const stopTimer = () => {
   clearInterval(timerID);
   timeStart = false;
   timerStart.textContent = 'Start!';
-  timeDuration = 25 * 60;
   displayTimer(timeDuration);
+  timeDurationInTimer = timeDuration;
+  console.log('(stop) Timer Start:', timeStart);
+};
+
+const editTimer = (e) => {
+  e.preventDefault();
+  if (!timeStart) {
+    // if timer is not running
+    changeTimerFlag = !changeTimerFlag;
+  }
+  if (changeTimerFlag) {
+    console.log('changeTimerFlag:', changeTimerFlag);
+    toggleTimerInputDivOn();
+    changeTimer();
+  }
 };
 
 const addTimerListeners = () => {
@@ -167,9 +190,138 @@ const addTimerListeners = () => {
     e.preventDefault();
     stopTimer();
   });
+
+  timerDisplay.addEventListener('click', editTimer);
+  timerEdit.addEventListener('click', editTimer);
+  timerSubmit.addEventListener('click', (e) => {
+    e.preventDefault();
+    handleTimerChange();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && changeTimerFlag === true) {
+      e.preventDefault();
+      console.log('Enter pressed');
+      handleTimerChange();
+    }
+  });
+
+  // Add spacebar event listener to start/pause timer
+  document.addEventListener('keydown', (e) => {
+    if (
+      e.key === ' ' &&
+      !changeTimerFlag &&
+      document.activeElement.tagName !== 'INPUT'
+    ) {
+      e.preventDefault();
+      console.log('Spacebar pressed');
+      startTimer();
+    }
+  });
 };
 
 document.addEventListener('DOMContentLoaded', () => {
   displayTimer(timeDuration);
   addTimerListeners();
 });
+
+const validateTimerInput = (timerInputMin, timerInputSec) => {
+  const re = /^[0-9]+$/;
+  if (!re.test(timerInputMin) || !re.test(timerInputSec)) {
+    displayTimerError('Please enter a valid time!');
+    // set timer input to previous value
+    setTimerInputDurationDisplay();
+    return false;
+  }
+
+  if (Number(timerInputSec) > 59) {
+    console.log(Number(timerInputSec));
+    displayTimerError('Enter a number between 0-59!');
+    // set timer input to previous value
+    setTimerInputDurationDisplay();
+    return false;
+  }
+
+  return true;
+};
+
+const displayTimerError = (errorMsg) => {
+  let errorMsgPara = document.getElementById('errorMsg');
+  errorMsgPara.style.display = 'block';
+  errorMsgPara.textContent = errorMsg;
+  setTimeout(() => {
+    errorMsgPara.style.display = 'none';
+  }, 3000);
+};
+
+const setTimerInputDurationDisplay = () => {
+  let durationDisplayMin = Math.floor(timeDuration / 60);
+  let durationDisplaySec = timeDuration % 60;
+  let timerInputMin = document.querySelector('#timerInputMin');
+  let timerInputSec = document.querySelector('#timerInputSec');
+  // change timerDisplay to input text
+  timerInputMin.value = durationDisplayMin;
+  timerInputSec.value = `${
+    durationDisplaySec < 10 ? '0' : ''
+  }${durationDisplaySec}`;
+};
+
+const handleTimerChange = () => {
+  // validate input
+  let validateInput = validateTimerInput(
+    timerInputMin.value,
+    timerInputSec.value
+  );
+  // if validation fails, exit the function and don't proceed
+  console.log('Validate Input:', validateInput);
+  if (!validateInput) return;
+  // if validation passes, set the new time duration
+  changeTimerFlag = false;
+  setDurationDisplay();
+  toggleTimerInputDivOff();
+  console.log('changeTimerFlag', changeTimerFlag);
+};
+
+const changeTimer = () => {
+  setTimerInputDurationDisplay();
+};
+
+const setDurationDisplay = () => {
+  timeDuration = getDurationDisplayMin() * 60 + getDurationDisplaySec();
+  timeDurationInTimer = timeDuration;
+  displayTimer(timeDuration);
+};
+
+const toggleTimerInputDivOn = () => {
+  document.getElementById('timerDivDisplay').style.display = 'none';
+  document.getElementById('timerInputDiv').style.display = 'block';
+  timerEdit.disabled = true;
+  timerStart.disabled = true;
+  timerStop.disabled = true;
+};
+
+const toggleTimerInputDivOff = () => {
+  document.getElementById('timerDivDisplay').style.display = 'block';
+  document.getElementById('timerInputDiv').style.display = 'none';
+  timerEdit.disabled = false;
+  timerStart.disabled = false;
+  timerStop.disabled = false;
+};
+
+const getDurationDisplayMin = () => {
+  return parseInt(document.querySelector('#timerInputMin').value);
+};
+
+const getDurationDisplaySec = () => {
+  return parseInt(document.querySelector('#timerInputSec').value);
+};
+
+// set spacebar to start and pause timer
+// document.addEventListener('keydown', (e) => {
+//   if (e.key === ' ') {
+//     console.log('Spacebar pressed');
+//     if (document.activeElement.tagName !== 'INPUT' && !changeTimerFlag) {
+//       startTimer();
+//     }
+//   }
+// });
