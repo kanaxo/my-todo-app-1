@@ -142,13 +142,35 @@ const displayTimer = (timeDuration) => {
   timerDisplay.textContent = durationDisplay;
 };
 
+const showTimerEndedMessage = () => {
+  const timerEndedModal = document.getElementById('timerEndedModal');
+  const modal = new bootstrap.Modal(timerEndedModal);
+  modal.show();
+  // hide modal after 5 seconds
+  setTimeout(() => {
+    modal.hide();
+  }, 5000);
+};
+
 const reduceTimer = () => {
   if (timeDurationInTimer > 0) {
     timeDurationInTimer--;
     displayTimer(timeDurationInTimer);
     console.log('timeDurationInTimer:', timeDurationInTimer);
   } else {
-    alert('Timer Ended!');
+    // play audio
+    const alarm = new Audio('audio/microwave-sound.mp3');
+    alarm
+      .play()
+      .then(() => {
+        console.log('Audio played successfully');
+        showTimerEndedMessage('hi');
+      })
+      .catch((error) => {
+        console.error('Error playing audio:', error);
+        showTimerEndedMessage();
+      });
+    // alert('Timer Ended!');
     stopTimer();
     console.log('Timer Start', timeStart);
   }

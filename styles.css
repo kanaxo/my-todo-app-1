@@ -2,6 +2,16 @@ body {
   text-align: center;
 }
 
+#timeDisplay {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+#toDoContainer {
+  margin: 20px;
+  display: inline-block;
+}
+
 #todoInput {
   display: flex;
   flex-direction: column;
