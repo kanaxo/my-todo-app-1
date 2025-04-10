@@ -2,6 +2,13 @@ body {
   text-align: center;
 }
 
+.container-fluid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 #timeDisplay {
   margin-left: auto;
   margin-right: 0;
@@ -10,6 +17,9 @@ body {
 #toDoContainer {
   margin: 20px;
   display: inline-block;
+  width: 100%;
+  max-width: 600px;
+  padding: 15px;
 }
 
 #todoInput {
@@ -26,6 +36,16 @@ div.toDoListContainer {
 ul#toDoList {
   display: inline-block;
   text-align: left;
+  width: 80%;
+}
+
+label.checkboxText {
+  margin: 0;
+  padding: 0;
+}
+
+button.deleteTask {
+  margin-left: auto;
 }
 
 .strikethrough:checked + .checkboxText {
@@ -33,15 +53,47 @@ ul#toDoList {
   color: gray;
 }
 
-div.timerInputDiv {
-  display: none;
+div.timerContainer {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  padding: 15px;
 }
 
-input.timerInput {
-  width: 50px;
+div.timerDivDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timerCountdown {
+  font-size: 2.5rem;
+  margin: 8px;
+  padding: 0;
+  width: 300px;
   text-align: center;
-  padding: 5px;
-  margin-bottom: 10px;
+}
+
+div.timerInputDiv {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  margin: 12px;
+}
+
+/* Match font size and height of input to h1 */
+.timerInput {
+  font-size: 2.5rem; /* Adjust based on h1's font size */
+  height: 3rem; /* Adjust to match h1's height */
+  width: 5rem;
+  text-align: center;
+  padding: 0;
+  margin: 0 5px;
+  box-sizing: border-box;
+}
+
+#setTimer {
+  margin: 0 5px;
 }
 
 p#errorMsg {

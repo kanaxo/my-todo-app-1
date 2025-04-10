@@ -66,12 +66,12 @@ const updateToDo = function () {
   toDoArr.forEach((Task, index) => {
     const id = `${index}`;
     toDoArrId.push(id);
-    const listElement = `<li>
-    <input id = "C${id}" class="strikethrough" type = "checkbox" ${
+    const listElement = `<li class="list-group-item d-flex">
+    <input id = "C${id}" class="strikethrough mr-2" type = "checkbox" ${
       checkedArray.includes(Task) ? 'checked' : ''
     } > 
     <label for="C${id}" class="checkboxText"> ${Task} </label>
-    <button class="btn btn-outline-primary btn-sm" id="D${id}">Delete</button> 
+    <button class="btn btn-outline-danger btn-sm deleteTask" id="D${id}">Delete</button> 
     </li> 
     `;
     mainList.innerHTML += listElement;
@@ -325,14 +325,14 @@ const setDurationDisplay = () => {
 
 const toggleTimerInputDivOn = () => {
   document.getElementById('timerDivDisplay').style.display = 'none';
-  document.getElementById('timerInputDiv').style.display = 'block';
+  document.getElementById('timerInputDiv').style.display = 'flex';
   timerEdit.disabled = true;
   timerStart.disabled = true;
   timerStop.disabled = true;
 };
 
 const toggleTimerInputDivOff = () => {
-  document.getElementById('timerDivDisplay').style.display = 'block';
+  document.getElementById('timerDivDisplay').style.display = 'flex';
   document.getElementById('timerInputDiv').style.display = 'none';
   timerEdit.disabled = false;
   timerStart.disabled = false;
