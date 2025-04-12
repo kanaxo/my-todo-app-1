@@ -66,7 +66,7 @@ const updateToDo = function () {
   toDoArr.forEach((Task, index) => {
     const id = `${index}`;
     toDoArrId.push(id);
-    const listElement = `<li class="list-group-item d-flex">
+    const listElement = `<li class="list-group-item list-group-item-action d-flex">
     <input id = "C${id}" class="strikethrough mr-2" type = "checkbox" ${
       checkedArray.includes(Task) ? 'checked' : ''
     } > 
@@ -114,7 +114,13 @@ const showCurrentTime = () => {
   displayTime.textContent = now.toLocaleTimeString();
 };
 
+let initialDocumentTitle;
 // Timer
+let mode = 'work'; // work, break, longBreak
+let timerDurationWork = 1; // 25 minutes in seconds
+let timerDurationBreak = 2; // 5 minutes in seconds
+let timerDurationLongBreak = 3; // 15 minutes in seconds
+let workCounter = 0; // counter for break time
 
 let timeDuration;
 let timeDurationInTimer;
@@ -122,8 +128,8 @@ let pausedTime;
 let timerID;
 let timeStart = false;
 let changeTimerFlag = false;
-timeDuration = 5;
-timeDurationInTimer = timeDuration;
+timeDuration = timerDurationWork; // time duration which is set in the timer
+timeDurationInTimer = timeDuration; // time duration which is displayed and reduced
 
 const timerDisplay = document.querySelector('#timerDisplay');
 const timerStart = document.querySelector('.startPauseTimer');
@@ -133,13 +139,29 @@ const timerInputSec = document.querySelector('#timerInputSec');
 const timerSubmit = document.querySelector('#setTimer');
 const timerEdit = document.querySelector('.editTimer');
 
-const displayTimer = (timeDuration) => {
+const workTab = document.querySelector('#workTab');
+const sBreakTab = document.querySelector('#sBreakTab');
+const lBreakTab = document.querySelector('#lBreakTab');
+const timerTabs = document.querySelectorAll('.timerTab');
+
+const getTimeFormat = (timeDuration) => {
   let durationDisplayMin = Math.floor(timeDuration / 60);
   let durationDisplaySec = timeDuration % 60;
   let durationDisplay = `${durationDisplayMin}:${
     durationDisplaySec < 10 ? '0' : ''
   }${durationDisplaySec}`;
+  return durationDisplay;
+};
+
+const displayTimer = (timeDuration) => {
+  let durationDisplay = getTimeFormat(timeDuration);
   timerDisplay.textContent = durationDisplay;
+  // display timer in title
+  if (timeStart) {
+    document.title = `⏳ ${durationDisplay}`;
+  } else {
+    document.title = initialDocumentTitle;
+  }
 };
 
 const showTimerEndedMessage = () => {
@@ -149,7 +171,7 @@ const showTimerEndedMessage = () => {
   // hide modal after 5 seconds
   setTimeout(() => {
     modal.hide();
-  }, 5000);
+  }, 3000);
 };
 
 const reduceTimer = () => {
@@ -164,7 +186,7 @@ const reduceTimer = () => {
       .play()
       .then(() => {
         console.log('Audio played successfully');
-        showTimerEndedMessage('hi');
+        showTimerEndedMessage();
       })
       .catch((error) => {
         console.error('Error playing audio:', error);
@@ -172,7 +194,22 @@ const reduceTimer = () => {
       });
     // alert('Timer Ended!');
     stopTimer();
+    // set mode to next mode
+    if (mode === 'work') {
+      if ((workCounter + 1) % 4 === 0) {
+        mode = 'longBreak';
+      } else {
+        mode = 'break';
+      }
+      workCounter++;
+    } else if (mode === 'break') {
+      mode = 'work';
+    } else if (mode === 'longBreak') {
+      mode = 'work';
+    }
+    setMode();
     console.log('Timer Start', timeStart);
+    console.log('work counter:', workCounter);
   }
 };
 
@@ -180,9 +217,11 @@ const startTimer = () => {
   if (timeStart) {
     clearInterval(timerID);
     timerStart.textContent = 'Start!';
+    document.title = `⏳ ${getTimeFormat(timeDurationInTimer)} ❚❚`;
   } else {
     timerStart.textContent = 'Pause!';
     timerID = setInterval(reduceTimer, 1000);
+    document.title = `⏳ ${getTimeFormat(timeDurationInTimer)} ▶`;
   }
   timeStart = !timeStart;
   console.log('(start) Timer Start:', timeStart);
@@ -249,12 +288,6 @@ const addTimerListeners = () => {
     }
   });
 };
-
-document.addEventListener('DOMContentLoaded', () => {
-  displayTimer(timeDuration);
-  addTimerListeners();
-  setInterval(showCurrentTime, 1000);
-});
 
 const validateTimerInput = (timerInputMin, timerInputSec) => {
   const re = /^[0-9]+$/;
@@ -347,12 +380,67 @@ const getDurationDisplaySec = () => {
   return parseInt(document.querySelector('#timerInputSec').value);
 };
 
-// set spacebar to start and pause timer
-// document.addEventListener('keydown', (e) => {
-//   if (e.key === ' ') {
-//     console.log('Spacebar pressed');
-//     if (document.activeElement.tagName !== 'INPUT' && !changeTimerFlag) {
-//       startTimer();
-//     }
-//   }
-// });
+const setActiveTimerTab = () => {
+  timerTabs.forEach((tab) => {
+    tab.classList.remove('active');
+  });
+  switch (mode) {
+    case 'work':
+      workTab.classList.add('active');
+      break;
+    case 'break':
+      sBreakTab.classList.add('active');
+      break;
+    case 'longBreak':
+      lBreakTab.classList.add('active');
+      break;
+  }
+};
+
+const setMode = () => {
+  if (mode === 'work') {
+    timeDuration = timerDurationWork;
+  } else if (mode === 'break') {
+    timeDuration = timerDurationBreak;
+  } else if (mode === 'longBreak') {
+    timeDuration = timerDurationLongBreak;
+  }
+  timeDurationInTimer = timeDuration;
+  displayTimer(timeDuration);
+  setActiveTimerTab();
+};
+
+const addModeListeners = () => {
+  timerTabs.forEach((tab) => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      switch (tab.id) {
+        case 'workTab':
+          mode = 'work';
+          break;
+        case 'sBreakTab':
+          mode = 'break';
+          break;
+        case 'lBreakTab':
+          mode = 'longBreak';
+          break;
+      }
+      timerTabs.forEach((tab) => {
+        tab.classList.remove('active');
+      });
+      tab.classList.add('active');
+      setMode();
+      stopTimer();
+      // reset timer to default
+    });
+  });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // ensures that event listeners are added after DOM is loaded
+  initialDocumentTitle = 'My TODO App';
+  displayTimer(timeDuration);
+  addTimerListeners();
+  addModeListeners();
+  setInterval(showCurrentTime, 1000);
+});

@@ -64,28 +64,43 @@
     <div class="container-fluid">
       <div class="card timerContainer">
         <h2>Pomodoro Timer</h2>
+        <ul class="nav nav-pills nav-justified">
+          <li class="nav-item">
+            <a class="nav-link active timerTab" id="workTab" href="#">Work</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link timerTab" id="sBreakTab" href="#">Short Break</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link timerTab" id="lBreakTab" href="#">Long Break</a>
+          </li>
+        </ul>
         <div class="timerDivDisplay" id="timerDivDisplay">
           <h1 id="timerDisplay" class="timerCountdown"></h1>
         </div>
         <div class="timerInputDiv" id="timerInputDiv">
-          <input
-            type="text"
-            class="timerInput"
-            id="timerInputMin"
-            maxlength="2"
-            placeholder="mm"
-          />
-          <input
-            type="text"
-            class="timerInput"
-            id="timerInputSec"
-            maxlength="2"
-            placeholder="ss"
-          />
-          <button class="setTimer btn btn-outline-primary" id="setTimer">
-            Set Timer
-          </button>
-          <p id="errorMsg"></p>
+          <div class="timerInputGroup">
+            <input
+              type="text"
+              class="timerInput"
+              id="timerInputMin"
+              maxlength="2"
+              placeholder="mm"
+            />
+            <input
+              type="text"
+              class="timerInput"
+              id="timerInputSec"
+              maxlength="2"
+              placeholder="ss"
+            />
+            <button class="setTimer btn btn-outline-primary" id="setTimer">
+              Set Timer
+            </button>
+          </div>
+          <div class="errorMsgDiv">
+            <p id="errorMsg"></p>
+          </div>
         </div>
         <button class="editTimer btn btn-primary btn-lg">Edit</button>
         <button class="startPauseTimer btn btn-primary btn-lg">Start!</button>
