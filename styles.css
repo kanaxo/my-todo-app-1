@@ -22,11 +22,16 @@ body {
   padding: 10px;
 }
 
+#toDoForm {
+  align-items: center;
+}
+
 #todoInput {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   padding: 15px;
+  width: 80%;
 }
 
 div.toDoListContainer {

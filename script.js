@@ -5,12 +5,12 @@ let toDoArrId = [];
 let checkedArray = [];
 
 // localStorage
-const saveToLocalStorage = function () {
+const saveToDoToLocalStorage = function () {
   localStorage.setItem('toDoList', JSON.stringify(toDoArr));
   localStorage.setItem('checkedArray', JSON.stringify(checkedArray));
 };
 
-const loadFromLocalStorage = function () {
+const loadToDoFromLocalStorage = function () {
   const savedTasks = localStorage.getItem('toDoList');
   const savedCheckedTasks = localStorage.getItem('checkedArray');
   if (savedTasks) {
@@ -26,7 +26,7 @@ const removeElement = function (e) {
   // obtain index
   const selectedIndex = parseInt(e.target.id.slice(1));
   toDoArr.splice(selectedIndex, 1);
-  saveToLocalStorage();
+  saveToDoToLocalStorage();
   // update list
   updateToDo();
 };
@@ -37,6 +37,17 @@ const addDeleteListener = function () {
   console.log(deleteElems);
   deleteElems.forEach((btn) => {
     btn.addEventListener('click', removeElement);
+  });
+};
+
+const addDeleteAllListener = function () {
+  // add event listener for delete all button
+  const deleteAllBtn = document.querySelector('#deleteAllButton');
+  deleteAllBtn.addEventListener('click', function () {
+    toDoArr = [];
+    checkedArray = [];
+    saveToDoToLocalStorage();
+    updateToDo();
   });
 };
 
@@ -54,7 +65,7 @@ const addCheckListener = function () {
         const taskIndex = checkedArray.indexOf(taskText);
         if (taskIndex !== -1) checkedArray.splice(taskIndex, 1);
       }
-      saveToLocalStorage();
+      saveToDoToLocalStorage();
     });
   });
 };
@@ -86,7 +97,7 @@ const submitToDo = function () {
   console.log(taskInputVal);
   if (taskInputVal !== '') {
     toDoArr.push(taskInputVal);
-    saveToLocalStorage();
+    saveToDoToLocalStorage();
   }
   updateToDo();
   taskInput.value = '';
@@ -100,12 +111,6 @@ toDoForm.addEventListener('submit', (e) => {
   submitToDo();
 });
 
-// driver code
-loadFromLocalStorage();
-updateToDo();
-console.log(toDoArrId);
-console.log(...toDoArr);
-
 // Clock
 const displayTime = document.getElementById('timeDisplay');
 
@@ -114,7 +119,7 @@ const showCurrentTime = () => {
   displayTime.textContent = now.toLocaleTimeString();
 };
 
-let initialDocumentTitle;
+let initialDocumentTitle = 'My TODO App';
 // Timer
 let mode = 'work'; // work, break, longBreak
 let timerDurationWork = 1; // 25 minutes in seconds
@@ -128,8 +133,6 @@ let pausedTime;
 let timerID;
 let timeStart = false;
 let changeTimerFlag = false;
-timeDuration = timerDurationWork; // time duration which is set in the timer
-timeDurationInTimer = timeDuration; // time duration which is displayed and reduced
 
 const timerDisplay = document.querySelector('#timerDisplay');
 const timerStart = document.querySelector('.startPauseTimer');
@@ -354,6 +357,17 @@ const setDurationDisplay = () => {
   timeDuration = getDurationDisplayMin() * 60 + getDurationDisplaySec();
   timeDurationInTimer = timeDuration;
   displayTimer(timeDuration);
+  // set mode timer duration
+  if (mode === 'work') {
+    timerDurationWork = timeDuration;
+    localStorage.setItem('timerDurationWork', timerDurationWork);
+  } else if (mode === 'break') {
+    timerDurationBreak = timeDuration;
+    localStorage.setItem('timerDurationBreak', timerDurationBreak);
+  } else if (mode === 'longBreak') {
+    timerDurationLongBreak = timeDuration;
+    localStorage.setItem('timerDurationLongBreak', timerDurationLongBreak);
+  }
 };
 
 const toggleTimerInputDivOn = () => {
@@ -436,10 +450,39 @@ const addModeListeners = () => {
   });
 };
 
+const loadTimesFromLocalStorage = () => {
+  const timerDurationWorkLoaded = localStorage.getItem('timerDurationWork');
+  const timerDurationBreakLoaded = localStorage.getItem('timerDurationBreak');
+  const timerDurationLongBreakLoaded = localStorage.getItem(
+    'timerDurationLongBreak'
+  );
+  if (timerDurationWorkLoaded === null) {
+    // if not set, set default values
+    console.log(timerDurationBreak, timerDurationWork, timerDurationLongBreak);
+    localStorage.setItem('timerDurationWork', timerDurationWork);
+    localStorage.setItem('timerDurationBreak', timerDurationBreak);
+    localStorage.setItem('timerDurationLongBreak', timerDurationLongBreak);
+    return;
+  } else {
+    timerDurationWork = parseInt(timerDurationWorkLoaded);
+    timerDurationBreak = parseInt(timerDurationBreakLoaded);
+    timerDurationLongBreak = parseInt(timerDurationLongBreakLoaded);
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  // ensures that event listeners are added after DOM is loaded
-  initialDocumentTitle = 'My TODO App';
-  displayTimer(timeDuration);
+  console.log('document loaded');
+  // update to do array
+  loadToDoFromLocalStorage();
+  updateToDo();
+  addDeleteAllListener();
+  console.log(toDoArrId);
+  console.log(...toDoArr);
+  // update times overwriting default values
+  loadTimesFromLocalStorage();
+  setMode();
+  console.log(timerDurationWork, timerDurationBreak, timerDurationLongBreak);
+  // ensures that event listeners are added after DOM is loaded;
   addTimerListeners();
   addModeListeners();
   setInterval(showCurrentTime, 1000);
