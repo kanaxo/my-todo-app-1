@@ -167,6 +167,24 @@ const displayTimer = (timeDuration) => {
   }
 };
 
+const updateProgressBar = (timeDurationInTimer) => {
+  console.log('progress bar updated');
+  const progressBar = document.querySelector('#timerProgressBar');
+  const progress = ((timeDuration - timeDurationInTimer) / timeDuration) * 100;
+  progressBar.style.width = `${progress}%`;
+  if (progress >= 100) {
+    progressBar.style.width = `100%`;
+    setTimeout(() => {
+      progressBar.style.transition = 'none';
+      progressBar.style.width = `0%`;
+      // Re-enable transition for future updates
+      setTimeout(() => {
+        progressBar.style.transition = 'width 1s linear';
+      }, 50);
+    }, 3000);
+  }
+};
+
 const showTimerEndedMessage = () => {
   const timerEndedModal = document.getElementById('timerEndedModal');
   const modal = new bootstrap.Modal(timerEndedModal);
@@ -181,6 +199,7 @@ const reduceTimer = () => {
   if (timeDurationInTimer > 0) {
     timeDurationInTimer--;
     displayTimer(timeDurationInTimer);
+    updateProgressBar(timeDurationInTimer);
     console.log('timeDurationInTimer:', timeDurationInTimer);
   } else {
     // play audio
@@ -197,6 +216,9 @@ const reduceTimer = () => {
       });
     // alert('Timer Ended!');
     stopTimer();
+    // reset progress bar
+    console.log('update progress bar');
+    updateProgressBar(0);
     // set mode to next mode
     if (mode === 'work') {
       if ((workCounter + 1) % 4 === 0) {
@@ -412,6 +434,7 @@ const setActiveTimerTab = () => {
 };
 
 const setMode = () => {
+  // set time durations when user clicks on different modes
   if (mode === 'work') {
     timeDuration = timerDurationWork;
   } else if (mode === 'break') {
@@ -420,6 +443,7 @@ const setMode = () => {
     timeDuration = timerDurationLongBreak;
   }
   timeDurationInTimer = timeDuration;
+  // set timer display to mode duration
   displayTimer(timeDuration);
   setActiveTimerTab();
 };
