@@ -126,6 +126,7 @@ let timerDurationWork = 1; // 25 minutes in seconds
 let timerDurationBreak = 2; // 5 minutes in seconds
 let timerDurationLongBreak = 3; // 15 minutes in seconds
 let workCounter = 0; // counter for break time
+let totalWorkDuration = 0; // sum up work duration
 
 let timeDuration;
 let timeDurationInTimer;
@@ -133,6 +134,9 @@ let pausedTime;
 let timerID;
 let timeStart = false;
 let changeTimerFlag = false;
+
+const alarm = new Audio('audio/microwave-sound.mp3');
+alarm.preload = 'auto';
 
 const timerDisplay = document.querySelector('#timerDisplay');
 const timerStart = document.querySelector('.startPauseTimer');
@@ -181,7 +185,7 @@ const updateProgressBar = (timeDurationInTimer) => {
       setTimeout(() => {
         progressBar.style.transition = 'width 1s linear';
       }, 50);
-    }, 3000);
+    }, 1000);
   }
 };
 
@@ -195,6 +199,74 @@ const showTimerEndedMessage = () => {
   }, 3000);
 };
 
+const getTodayDateFormatted = () => {
+  const today = new Date();
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  // format date to dd/mm/yyyy
+  return today.toLocaleDateString('en-GB', options);
+};
+
+const saveWorkStatsToLocalStorage = () => {
+  // get counter and duration based on date
+  const todayDate = getTodayDateFormatted();
+  let workStats = localStorage.getItem('workStats');
+  // check if workStats is null, if so, initialize it
+  if (workStats) {
+    workStats = JSON.parse(workStats);
+    console.log('workStats:', workStats);
+    if (workStats[todayDate]) {
+      // if workStats for today exists, update it
+
+      workStats[todayDate].workCounter += 1;
+      workStats[todayDate].totalWorkDuration +=
+        timeDuration - timeDurationInTimer;
+    } else {
+      workStats[todayDate] = {
+        workCounter: 1,
+        totalWorkDuration: timeDuration - timeDurationInTimer
+      };
+    }
+  } else {
+    // if workStats is null, initialize it
+    workStats = {
+      [todayDate]: {
+        workCounter: 1,
+        totalWorkDuration: timeDuration - timeDurationInTimer
+      }
+    };
+  }
+  // save counter and duration back to localStorage
+  localStorage.setItem('workStats', JSON.stringify(workStats));
+};
+
+const resetTimer = () => {
+  // save work stats to local storage
+  saveWorkStatsToLocalStorage();
+  // reset progress bar
+  updateProgressBar(0);
+  // set mode to next mode
+  if (mode === 'work') {
+    if ((workCounter + 1) % 4 === 0) {
+      mode = 'longBreak';
+    } else {
+      mode = 'break';
+    }
+    // add 1 full session to workCounter
+    workCounter++;
+    // sum up total work stats
+  } else if (mode === 'break') {
+    mode = 'work';
+  } else if (mode === 'longBreak') {
+    mode = 'work';
+  }
+  setMode();
+  // stop timer and reset durations
+  stopTimer();
+  console.log('Timer Start', timeStart);
+  console.log('work counter:', workCounter);
+  // save work counter and work duration to local storage
+};
+
 const reduceTimer = () => {
   if (timeDurationInTimer > 0) {
     timeDurationInTimer--;
@@ -203,7 +275,7 @@ const reduceTimer = () => {
     console.log('timeDurationInTimer:', timeDurationInTimer);
   } else {
     // play audio
-    const alarm = new Audio('audio/microwave-sound.mp3');
+
     alarm
       .play()
       .then(() => {
@@ -214,27 +286,7 @@ const reduceTimer = () => {
         console.error('Error playing audio:', error);
         showTimerEndedMessage();
       });
-    // alert('Timer Ended!');
-    stopTimer();
-    // reset progress bar
-    console.log('update progress bar');
-    updateProgressBar(0);
-    // set mode to next mode
-    if (mode === 'work') {
-      if ((workCounter + 1) % 4 === 0) {
-        mode = 'longBreak';
-      } else {
-        mode = 'break';
-      }
-      workCounter++;
-    } else if (mode === 'break') {
-      mode = 'work';
-    } else if (mode === 'longBreak') {
-      mode = 'work';
-    }
-    setMode();
-    console.log('Timer Start', timeStart);
-    console.log('work counter:', workCounter);
+    resetTimer();
   }
 };
 
@@ -253,6 +305,7 @@ const startTimer = () => {
 };
 
 const stopTimer = () => {
+  // clear timer and reset durations
   clearInterval(timerID);
   timeStart = false;
   timerStart.textContent = 'Start!';
@@ -500,11 +553,13 @@ document.addEventListener('DOMContentLoaded', () => {
   loadToDoFromLocalStorage();
   updateToDo();
   addDeleteAllListener();
-  console.log(toDoArrId);
-  console.log(...toDoArr);
   // update times overwriting default values
   loadTimesFromLocalStorage();
+  // update timer display to work duration value
   setMode();
+  // put console log at bottom to make sure it runs after all functions
+  console.log(toDoArrId);
+  console.log(...toDoArr);
   console.log(timerDurationWork, timerDurationBreak, timerDurationLongBreak);
   // ensures that event listeners are added after DOM is loaded;
   addTimerListeners();
