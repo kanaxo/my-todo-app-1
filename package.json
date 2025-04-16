@@ -1,0 +1,25 @@
+{
+  "name": "my-todo-app-1",
+  "version": "1.0.0",
+  "description": "Trying to build a todo app from scratch",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kanaxo/my-todo-app-1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kanaxo/my-todo-app-1/issues"
+  },
+  "homepage": "https://github.com/kanaxo/my-todo-app-1#readme",
+  "dependencies": {
+    "firebase": "^11.6.0",
+    "webpack": "^5.99.5",
+    "webpack-cli": "^6.0.1"
+  }
+}
