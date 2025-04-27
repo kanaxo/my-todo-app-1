@@ -1,18 +1,6 @@
 'use strict';
-
-import { initializeApp } from 'firebase/app';
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyAsafO3Jjv_zjSexRPzNV5X81OF4pj7t-4',
-  authDomain: 'my-todo-app-84f3c.firebaseapp.com',
-  projectId: 'my-todo-app-84f3c',
-  storageBucket: 'my-todo-app-84f3c.firebasestorage.app',
-  messagingSenderId: '892171186673',
-  appId: '1:892171186673:web:b2789218b41d5cc5561450',
-  measurementId: 'G-771917CC5P'
-};
-
-const app = initializeApp(firebaseConfig);
+import './firebase.js';
+import './styles.css';
 
 let toDoArr = [];
 let toDoArrId = [];
