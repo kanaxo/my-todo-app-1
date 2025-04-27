@@ -1,1 +1,1 @@
-console.log('Hello from the backend!');
+console.log('Hello from the backend server!');
