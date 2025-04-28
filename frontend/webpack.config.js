@@ -2,11 +2,14 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 module.exports = {
   entry: './src/script.js', // your entry point
   output: {
-    filename: 'script.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: isProduction ? 'script.[contenthash].js' : 'script.js', // ✨ Added [contenthash]
+    path: path.resolve(__dirname, 'dist'),
+    clean: true // ✨ Automatically clean dist/ before each build
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -36,9 +39,9 @@ module.exports = {
       }
     ]
   },
-  mode: 'development', // or 'production'
-  devtool: 'eval-source-map',
-  watch: true, // Enable watch mode
+  mode: isProduction ? 'production' : 'development',
+  devtool: isProduction ? 'hidden-source-map' : 'eval-source-map',
+  watch: !isProduction, // Watch files ONLY in development
   devServer: {
     static: './dist',
     open: true,
