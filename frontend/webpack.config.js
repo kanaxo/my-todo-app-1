@@ -40,7 +40,7 @@ module.exports = {
     ]
   },
   mode: isProduction ? 'production' : 'development',
-  devtool: isProduction ? 'hidden-source-map' : 'eval-source-map',
+  devtool: isProduction ? false : 'eval-source-map', //'hidden-source-map'
   watch: !isProduction, // Watch files ONLY in development
   devServer: {
     static: './dist',
