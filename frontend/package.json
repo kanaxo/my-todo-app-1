@@ -6,13 +6,19 @@
   "scripts": {
     "start": "webpack serve",
     "build": "webpack",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kanaxo/my-todo-app-1.git"
+    "url": "git+https://github.com/kanaxo/my-todo-app-1.git"
   },
+  "keywords": [],
+  "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kanaxo/my-todo-app-1/issues"
+  },
   "homepage": "https://github.com/kanaxo/my-todo-app-1#readme",
   "dependencies": {
     "firebase": "^11.6.0"

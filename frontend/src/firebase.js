@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import {
+  connectAuthEmulator,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
