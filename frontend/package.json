@@ -20,9 +20,6 @@
     "url": "https://github.com/kanaxo/my-todo-app-1/issues"
   },
   "homepage": "https://github.com/kanaxo/my-todo-app-1#readme",
-  "dependencies": {
-    "firebase": "^11.6.0"
-  },
   "devDependencies": {
     "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",
