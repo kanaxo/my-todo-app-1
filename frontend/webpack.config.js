@@ -1,6 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // ✨ For CSS extraction
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin'); // ✨ For CSS minification
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -21,13 +23,23 @@ module.exports = {
         { from: 'src/audio', to: 'audio' }
         // { from: 'src/styles.css', to: 'styles.css' }
       ]
-    })
+    }),
+    ...(isProduction
+      ? [
+          new MiniCssExtractPlugin({
+            filename: 'styles.[contenthash].css'
+          })
+        ]
+      : [])
   ],
   module: {
     rules: [
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader']
+        use: [
+          isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+          'css-loader'
+        ]
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
@@ -41,7 +53,7 @@ module.exports = {
   },
   mode: isProduction ? 'production' : 'development',
   devtool: isProduction ? 'hidden-source-map' : 'eval-source-map',
-  watch: !isProduction, // Watch files ONLY in development
+  // watch: !isProduction, // Watch files ONLY in development
   devServer: {
     static: './dist',
     open: true,
@@ -50,5 +62,9 @@ module.exports = {
     client: {
       logging: 'warn'
     }
+  },
+  optimization: {
+    minimizer: [new CssMinimizerPlugin()],
+    minimize: isProduction // Minimize only in production
   }
 };
