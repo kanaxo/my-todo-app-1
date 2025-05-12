@@ -4,6 +4,51 @@ body {
 
 .navbar {
   min-width: 350px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+#loginDiv {
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.navbar-user-info {
+  margin: 0 auto; /* Center the user info */
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+#userNameSpan {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#logoutLoader {
+  display: none;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .container-fluid {
@@ -20,8 +65,10 @@ body {
 }
 
 #timeDisplay {
-  margin-left: auto;
-  margin-right: 0;
+  /* margin-left: auto;
+  margin-right: auto; */
+  flex: 1;
+  text-align: center;
 }
 
 #toDoContainer {

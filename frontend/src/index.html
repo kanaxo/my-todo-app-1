@@ -29,12 +29,14 @@
         />
         TO DO APP</a
       >
+      <span class="navbar-text" id="timeDisplay"> </span>
       <div id="loginDiv">
         <button class="navbar-btn" id="googleSignInBtn">
           <i class="fa-brands fa-google"></i> Sign in with Google
         </button>
       </div>
       <div id="userInfoDiv" class="navbar-user-info">
+        <div id="logoutLoader"></div>
         <img
           id="userImage"
           src="images/default-avatar.jpg"
@@ -48,7 +50,6 @@
           <i class="fa-solid fa-right-from-bracket"></i> Logout
         </button>
       </div>
-      <span class="navbar-text" id="timeDisplay"> </span>
     </nav>
     <!-- Timer Ended Modal -->
     <div class="modal fade" id="timerEndedModal" tabindex="-1">

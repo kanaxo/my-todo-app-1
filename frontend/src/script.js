@@ -1,33 +1,34 @@
 'use strict';
 import './firebase.js'; // comment out firebase.js for now as authentication does not work on netlify/vercel
 import './styles.css';
+import { state } from './state.js';
 
-let toDoArr = [];
+// let toDoArr = state.toDoArr;
+// let checkedArray = state.checkedArray;
 let toDoArrId = [];
-let checkedArray = [];
 
 // localStorage
 const saveToDoToLocalStorage = function () {
-  localStorage.setItem('toDoList', JSON.stringify(toDoArr));
-  localStorage.setItem('checkedArray', JSON.stringify(checkedArray));
+  localStorage.setItem('toDoArr', JSON.stringify(state.toDoArr));
+  localStorage.setItem('checkedArray', JSON.stringify(state.checkedArray));
 };
 
 const loadToDoFromLocalStorage = function () {
-  const savedTasks = localStorage.getItem('toDoList');
+  const savedTasks = localStorage.getItem('toDoArr');
   const savedCheckedTasks = localStorage.getItem('checkedArray');
   if (savedTasks) {
-    toDoArr = JSON.parse(savedTasks);
+    state.toDoArr = JSON.parse(savedTasks);
   }
   if (savedCheckedTasks) {
-    checkedArray = JSON.parse(savedCheckedTasks);
+    state.checkedArray = JSON.parse(savedCheckedTasks);
   }
 };
 
 const removeElement = function (e) {
-  // remove element from toDoArr
+  // remove element from state.toDoArr
   // obtain index
   const selectedIndex = parseInt(e.target.id.slice(1));
-  toDoArr.splice(selectedIndex, 1);
+  state.toDoArr.splice(selectedIndex, 1);
   saveToDoToLocalStorage();
   // update list
   updateToDo();
@@ -46,8 +47,8 @@ const addDeleteAllListener = function () {
   // add event listener for delete all button
   const deleteAllBtn = document.querySelector('#deleteAllButton');
   deleteAllBtn.addEventListener('click', function () {
-    toDoArr = [];
-    checkedArray = [];
+    state.toDoArr = [];
+    state.checkedArray = [];
     saveToDoToLocalStorage();
     updateToDo();
   });
@@ -58,30 +59,30 @@ const addCheckListener = function () {
   const checkboxes = document.querySelectorAll('.strikethrough');
   checkboxes.forEach((checkbox, index) => {
     checkbox.addEventListener('change', function () {
-      const taskText = toDoArr[index];
+      const taskText = state.toDoArr[index];
 
       if (checkbox.checked) {
-        // add to checkedArray
-        checkedArray.push(taskText);
+        // add to state.checkedArray
+        state.checkedArray.push(taskText);
       } else {
-        const taskIndex = checkedArray.indexOf(taskText);
-        if (taskIndex !== -1) checkedArray.splice(taskIndex, 1);
+        const taskIndex = state.checkedArray.indexOf(taskText);
+        if (taskIndex !== -1) state.checkedArray.splice(taskIndex, 1);
       }
       saveToDoToLocalStorage();
     });
   });
 };
 
-const updateToDo = function () {
+export const updateToDo = function () {
   const mainList = document.getElementById('toDoList');
   mainList.innerHTML = '';
   toDoArrId = []; // reset to prevent duplication
-  toDoArr.forEach((Task, index) => {
+  state.toDoArr.forEach((Task, index) => {
     const id = `${index}`;
     toDoArrId.push(id);
     const listElement = `<li class="list-group-item list-group-item-action d-flex">
     <input id = "C${id}" class="strikethrough mr-2" type = "checkbox" ${
-      checkedArray.includes(Task) ? 'checked' : ''
+      state.checkedArray.includes(Task) ? 'checked' : ''
     } > 
     <label for="C${id}" class="checkboxText"> ${Task} </label>
     <button class="btn btn-outline-danger btn-sm deleteTask" id="D${id}">Delete</button> 
@@ -98,7 +99,7 @@ const submitToDo = function () {
   const taskInputVal = taskInput.value.trim();
   console.log(taskInputVal);
   if (taskInputVal !== '') {
-    toDoArr.push(taskInputVal);
+    state.toDoArr.push(taskInputVal);
     saveToDoToLocalStorage();
   }
   updateToDo();
@@ -123,10 +124,10 @@ const showCurrentTime = () => {
 
 let initialDocumentTitle = 'My TODO App';
 // Timer
-let mode = 'work'; // work, break, longBreak
-let timerDurationWork = 1; // 25 minutes in seconds
-let timerDurationBreak = 2; // 5 minutes in seconds
-let timerDurationLongBreak = 3; // 15 minutes in seconds
+// let mode = 'work'; // work, break, longBreak
+// let timerDurationWork = 1; // 25 minutes in seconds
+// let timerDurationBreak = 2; // 5 minutes in seconds
+// let timerDurationLongBreak = 3; // 15 minutes in seconds
 let workCounter = 0; // counter for break time
 let totalWorkDuration = 0; // sum up work duration
 
@@ -211,55 +212,62 @@ const getTodayDateFormatted = () => {
 const saveWorkStatsToLocalStorage = () => {
   // get counter and duration based on date
   const todayDate = getTodayDateFormatted();
-  let workStats = localStorage.getItem('workStats');
-  // check if workStats is null, if so, initialize it
-  if (workStats) {
-    workStats = JSON.parse(workStats);
-    console.log('workStats:', workStats);
-    if (workStats[todayDate]) {
+  // let workStats = null;
+  try {
+    const workStats = localStorage.getItem('workStats');
+    state.workStats = JSON.parse(workStats);
+  } catch (error) {
+    console.error('Error getting workStats from localStorage:', error);
+  }
+  console.log('workStats:', state.workStats);
+  if (state.workStats) {
+    // check if workStats is null, if not, update it
+    console.log('workStats:', state.workStats);
+    if (state.workStats[todayDate]) {
       // if workStats for today exists, update it
-
-      workStats[todayDate].workCounter += 1;
-      workStats[todayDate].totalWorkDuration +=
+      state.workStats[todayDate].workSessionsCompleted += 1;
+      state.workStats[todayDate].totalWorkDuration +=
         timeDuration - timeDurationInTimer;
     } else {
-      workStats[todayDate] = {
-        workCounter: 1,
+      state.workStats[todayDate] = {
+        workSessionsCompleted: 1,
         totalWorkDuration: timeDuration - timeDurationInTimer
       };
     }
   } else {
     // if workStats is null, initialize it
-    workStats = {
+    state.workStats = {
       [todayDate]: {
-        workCounter: 1,
+        workSessionsCompleted: 1,
         totalWorkDuration: timeDuration - timeDurationInTimer
       }
     };
   }
   // save counter and duration back to localStorage
-  localStorage.setItem('workStats', JSON.stringify(workStats));
+  localStorage.setItem('workStats', JSON.stringify(state.workStats));
 };
 
 const resetTimer = () => {
-  // save work stats to local storage
-  saveWorkStatsToLocalStorage();
+  if (state.mode === 'work') {
+    // save work stats to local storage
+    saveWorkStatsToLocalStorage();
+  }
   // reset progress bar
   updateProgressBar(0);
   // set mode to next mode
-  if (mode === 'work') {
+  if (state.mode === 'work') {
     if ((workCounter + 1) % 4 === 0) {
-      mode = 'longBreak';
+      state.mode = 'longBreak';
     } else {
-      mode = 'break';
+      state.mode = 'break';
     }
     // add 1 full session to workCounter
     workCounter++;
     // sum up total work stats
-  } else if (mode === 'break') {
-    mode = 'work';
-  } else if (mode === 'longBreak') {
-    mode = 'work';
+  } else if (state.mode === 'break') {
+    state.mode = 'work';
+  } else if (state.mode === 'longBreak') {
+    state.mode = 'work';
   }
   setMode();
   // stop timer and reset durations
@@ -435,15 +443,18 @@ const setDurationDisplay = () => {
   timeDurationInTimer = timeDuration;
   displayTimer(timeDuration);
   // set mode timer duration
-  if (mode === 'work') {
-    timerDurationWork = timeDuration;
-    localStorage.setItem('timerDurationWork', timerDurationWork);
-  } else if (mode === 'break') {
-    timerDurationBreak = timeDuration;
-    localStorage.setItem('timerDurationBreak', timerDurationBreak);
-  } else if (mode === 'longBreak') {
-    timerDurationLongBreak = timeDuration;
-    localStorage.setItem('timerDurationLongBreak', timerDurationLongBreak);
+  if (state.mode === 'work') {
+    state.timerDurationWork = timeDuration;
+    localStorage.setItem('timerDurationWork', state.timerDurationWork);
+  } else if (state.mode === 'break') {
+    state.timerDurationBreak = timeDuration;
+    localStorage.setItem('timerDurationBreak', state.timerDurationBreak);
+  } else if (state.mode === 'longBreak') {
+    state.timerDurationLongBreak = timeDuration;
+    localStorage.setItem(
+      'timerDurationLongBreak',
+      state.timerDurationLongBreak
+    );
   }
 };
 
@@ -475,7 +486,7 @@ const setActiveTimerTab = () => {
   timerTabs.forEach((tab) => {
     tab.classList.remove('active');
   });
-  switch (mode) {
+  switch (state.mode) {
     case 'work':
       workTab.classList.add('active');
       break;
@@ -488,14 +499,14 @@ const setActiveTimerTab = () => {
   }
 };
 
-const setMode = () => {
+export const setMode = () => {
   // set time durations when user clicks on different modes
-  if (mode === 'work') {
-    timeDuration = timerDurationWork;
-  } else if (mode === 'break') {
-    timeDuration = timerDurationBreak;
-  } else if (mode === 'longBreak') {
-    timeDuration = timerDurationLongBreak;
+  if (state.mode === 'work') {
+    timeDuration = state.timerDurationWork;
+  } else if (state.mode === 'break') {
+    timeDuration = state.timerDurationBreak;
+  } else if (state.mode === 'longBreak') {
+    timeDuration = state.timerDurationLongBreak;
   }
   timeDurationInTimer = timeDuration;
   // set timer display to mode duration
@@ -509,13 +520,13 @@ const addModeListeners = () => {
       e.preventDefault();
       switch (tab.id) {
         case 'workTab':
-          mode = 'work';
+          state.mode = 'work';
           break;
         case 'sBreakTab':
-          mode = 'break';
+          state.mode = 'break';
           break;
         case 'lBreakTab':
-          mode = 'longBreak';
+          state.mode = 'longBreak';
           break;
       }
       timerTabs.forEach((tab) => {
@@ -537,15 +548,22 @@ const loadTimesFromLocalStorage = () => {
   );
   if (timerDurationWorkLoaded === null) {
     // if not set, set default values
-    console.log(timerDurationBreak, timerDurationWork, timerDurationLongBreak);
-    localStorage.setItem('timerDurationWork', timerDurationWork);
-    localStorage.setItem('timerDurationBreak', timerDurationBreak);
-    localStorage.setItem('timerDurationLongBreak', timerDurationLongBreak);
+    console.log(
+      state.timerDurationBreak,
+      state.timerDurationWork,
+      state.timerDurationLongBreak
+    );
+    localStorage.setItem('timerDurationWork', state.timerDurationWork);
+    localStorage.setItem('timerDurationBreak', state.timerDurationBreak);
+    localStorage.setItem(
+      'timerDurationLongBreak',
+      state.timerDurationLongBreak
+    );
     return;
   } else {
-    timerDurationWork = parseInt(timerDurationWorkLoaded);
-    timerDurationBreak = parseInt(timerDurationBreakLoaded);
-    timerDurationLongBreak = parseInt(timerDurationLongBreakLoaded);
+    state.timerDurationWork = parseInt(timerDurationWorkLoaded);
+    state.timerDurationBreak = parseInt(timerDurationBreakLoaded);
+    state.timerDurationLongBreak = parseInt(timerDurationLongBreakLoaded);
   }
 };
 
@@ -561,8 +579,12 @@ document.addEventListener('DOMContentLoaded', () => {
   setMode();
   // put console log at bottom to make sure it runs after all functions
   console.log(toDoArrId);
-  console.log(...toDoArr);
-  console.log(timerDurationWork, timerDurationBreak, timerDurationLongBreak);
+  console.log(...state.toDoArr);
+  console.log(
+    state.timerDurationWork,
+    state.timerDurationBreak,
+    state.timerDurationLongBreak
+  );
   // ensures that event listeners are added after DOM is loaded;
   addTimerListeners();
   addModeListeners();
