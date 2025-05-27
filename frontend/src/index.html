@@ -16,6 +16,7 @@
       src="https://kit.fontawesome.com/1864eeb743.js"
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -51,6 +52,42 @@
         </button>
       </div>
     </nav>
+    <!-- Chart Modal -->
+    <div class="modal fade" id="chartModal" tabindex="-1">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="chartModalLabel">Statistics</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="chartModalBody">
+            <div id="chartDiv">
+              <canvas id="workChart"></canvas>
+            </div>
+            <p id="noWorkStatsMessage" display="none">
+              No work stats available. Please complete some work sessions to see
+              the chart.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Timer Ended Modal -->
     <div class="modal fade" id="timerEndedModal" tabindex="-1">
       <div class="modal-dialog" role="document">
@@ -130,6 +167,14 @@
         <button class="editTimer btn btn-primary btn-lg">Edit</button>
         <button class="startPauseTimer btn btn-primary btn-lg">Start!</button>
         <button class="stopTimer btn btn-primary btn-lg">Stop!</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-toggle="modal"
+          data-target="#chartModal"
+        >
+          Statistics
+        </button>
       </div>
       <div class="card" id="toDoContainer">
         <h3>Tasks</h3>
@@ -193,6 +238,7 @@
         >Pixabay</a
       >
     </p>
+    <!-- <canvas id="workChart"></canvas> -->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script

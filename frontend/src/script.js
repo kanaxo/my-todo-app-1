@@ -1,5 +1,6 @@
 'use strict';
-import './firebase.js'; // comment out firebase.js for now as authentication does not work on netlify/vercel
+import './firebase.js';
+import './workStatsChart.js';
 import './styles.css';
 import { state } from './state.js';
 
