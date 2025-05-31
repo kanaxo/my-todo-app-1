@@ -1,27 +1,34 @@
-// const workStats = {
-//   '12/05/2025': { workSessionsCompleted: 1, totalWorkDuration: 1 },
-//   '13/05/2025': { workSessionsCompleted: 2, totalWorkDuration: 5 },
-//   '14/05/2025': { workSessionsCompleted: 3, totalWorkDuration: 8 }
-// };
+/*
+// For testing purposes
+const workStats = {
+  '12/05/2025': { workSessionsCompleted: 1, totalWorkDuration: 1 },
+  '13/05/2025': { workSessionsCompleted: 2, totalWorkDuration: 5 },
+  '14/05/2025': { workSessionsCompleted: 3, totalWorkDuration: 8 }
+};
+*/
 
-const ctx = document.getElementById('workChart').getContext('2d');
 const chartDiv = document.getElementById('chartDiv');
 const chartModalBody = document.getElementById('chartModalBody');
 const noWorkStatsMessage = document.getElementById('noWorkStatsMessage');
+
 $('#chartModal').on('shown.bs.modal', function () {
-  // Clear any previous chart
-  noWorkStatsMessage.style.display = 'none';
-  chartDiv.style.display = 'none';
-  // Clear the chart canvas
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const workStats = getWorkStatsFromLocalStorage();
   if (workStats !== null) {
-    chartDiv.style.display = 'block';
-    createChart(workStats);
+    // Create a new canvas element for the chart
+    noWorkStatsMessage.style.display = 'none';
+    $('div#chartDiv').append('<canvas id="workChart"></canvas>');
+    let ctx = document.getElementById('workChart').getContext('2d');
+    createChart(workStats, ctx);
   } else {
-    console.error('No work stats found in localStorage.');
+    console.log('No work stats found in localStorage.');
     noWorkStatsMessage.style.display = 'block';
   }
+});
+
+$('#chartModal').on('hidden.bs.modal', function () {
+  $('canvas#workChart').remove(); // Remove the chart canvas
+  noWorkStatsMessage.style.display = 'none';
+  // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 });
 
 const getWorkStatsFromLocalStorage = () => {
@@ -29,12 +36,12 @@ const getWorkStatsFromLocalStorage = () => {
   return workStats;
 };
 
-const createChart = (workStats) => {
-  const dates = Object.keys(workStats);
-  const durations = Object.values(workStats).map(
-    (stats) => Math.round((stats.totalWorkDuration / 60) * 100) / 100
-  );
-  console.log(durations);
+const createChart = (workStats, ctx) => {
+  const dates = Object.keys(workStats).slice(-5); // Get the last 5 dates
+  const durations = Object.values(workStats)
+    .map((stats) => Math.round((stats.totalWorkDuration / 60) * 100) / 100)
+    .slice(-5); // Get the last 5 total work durations in minutes
+
   // Set up the chart data
   const chartData = {
     labels: dates, // X-axis labels (dates)

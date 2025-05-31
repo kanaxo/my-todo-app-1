@@ -5,6 +5,8 @@ export const state = {
   timerDurationWork: 1,
   timerDurationBreak: 2,
   timerDurationLongBreak: 3,
+  longBreakInterval: 4,
+  selectedSound: 'microwave-sound',
   workStats: null
 };
 
@@ -24,6 +26,8 @@ export const defaultState = {
   timerDurationWork: 1,
   timerDurationBreak: 2,
   timerDurationLongBreak: 3,
+  longBreakInterval: 4,
+  selectedSound: 'microwave-sound',
   workStats: null
 };
 

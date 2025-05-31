@@ -42,6 +42,7 @@ const loginWithGoogle = async () => {
     console.log('Google sign-in successful:', result.user);
     getUserInfoFromFirestore(result.user);
     displayUserInfo(result.user);
+    console.log('User info retrieved from Firestore');
   } catch (error) {
     console.error('Google sign-in error:', error);
   }
@@ -78,7 +79,13 @@ const updateLocalStorage = (userData) => {
     if (localStorageKeys.includes(key)) {
       // if (userData.hasOwnProperty(key)) {
       try {
-        localStorage.setItem(key, JSON.stringify(userData[key]));
+        const value = userData[key];
+        // if (typeof value === 'string') {
+        //   // Store strings directly without JSON.stringify
+        //   localStorage.setItem(key, value);
+        // } else {
+        // For objects, arrays, numbers, boolean, stringify
+        localStorage.setItem(key, JSON.stringify(value));
       } catch (error) {
         console.error(`Error saving key "${key}" to localStorage:`, error);
       }
@@ -105,7 +112,10 @@ const saveUserInfoToFirestore = async (user) => {
   const userId = user.uid;
   const userDocRef = doc(db, 'users', userId);
   // const userData = getLocalStorageAsJSON();
-
+  console.log('userId:', userId);
+  console.log('userDocRef:', userDocRef.path);
+  console.log('state:', JSON.stringify(state));
+  console.log('user authenticated:', auth.currentUser);
   try {
     // save state to Firestore instead
     await setDoc(userDocRef, state); //{ merge: true } to update only

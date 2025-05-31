@@ -14,6 +14,7 @@ body {
   display: none;
   align-items: center;
   justify-content: flex-end;
+  margin-right: 10px;
 }
 
 .navbar-user-info {
@@ -22,6 +23,7 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  margin-right: 10px;
 }
 
 #userNameSpan {

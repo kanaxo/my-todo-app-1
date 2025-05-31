@@ -19,6 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
+    <!-- navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">
         <img
@@ -33,7 +34,7 @@
       <span class="navbar-text" id="timeDisplay"> </span>
       <div id="loginDiv">
         <button class="navbar-btn" id="googleSignInBtn">
-          <i class="fa-brands fa-google"></i> Sign in with Google
+          <i class="fa-brands fa-google"></i> Google Sign in
         </button>
       </div>
       <div id="userInfoDiv" class="navbar-user-info">
@@ -51,7 +52,131 @@
           <i class="fa-solid fa-right-from-bracket"></i> Logout
         </button>
       </div>
+      <div id="optionsDropdown" class="dropdown">
+        <button
+          class="btn btn-secondary dropdown-toggle"
+          type="button"
+          id="dropdownMenuButton"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Options
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <button
+            type="button"
+            class="dropdown-item btn"
+            data-toggle="modal"
+            data-target="#settingsModal"
+          >
+            Settings
+          </button>
+          <button
+            type="button"
+            class="dropdown-item btn"
+            data-toggle="modal"
+            data-target="#chartModal"
+          >
+            Statistics
+          </button>
+        </div>
+      </div>
     </nav>
+    <!-- Setting Modal with inputs for work, shortbreak, long break -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Settings</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div
+              id="errorContainer"
+              class="alert alert-danger"
+              style="display: none"
+            ></div>
+            <form id="settingsForm">
+              <div class="form-group">
+                <label for="workDuration">Work Duration (minutes)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="workDuration"
+                  name="workDuration"
+                  value="25"
+                  min="1"
+                />
+                <label for="shortBreakDuration"
+                  >Short Break Duration (minutes)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="shortBreakDuration"
+                  name="shortBreakDuration"
+                  value="5"
+                  min="1"
+                />
+                <label for="longBreakDuration"
+                  >Long Break Duration (minutes)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="longBreakDuration"
+                  name="longBreakDuration"
+                  value="15"
+                  min="1"
+                />
+                <label for="longBreakInterval"
+                  >Long Break Interval (number of work sessions)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="longBreakInterval"
+                  value="4"
+                  min="1"
+                  max="100"
+                  step="1"
+                />
+                <label for="alarmSound">Alarm Sound</label>
+                <select class="form-control" id="alarmSound" name="alarmSound">
+                  <option value="microwave-sound">Ding</option>
+                  <option value="elevator-chime">Elevator</option>
+                  <option value="funny-alarm">Funny alarm</option>
+                </select>
+              </div>
+            </form>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="saveSettingsBtn"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Chart Modal -->
     <div class="modal fade" id="chartModal" tabindex="-1">
       <div class="modal-dialog modal-lg" role="document">
@@ -69,9 +194,9 @@
           </div>
           <div class="modal-body" id="chartModalBody">
             <div id="chartDiv">
-              <canvas id="workChart"></canvas>
+              <!-- <canvas id="workChart"></canvas> -->
             </div>
-            <p id="noWorkStatsMessage" display="none">
+            <p id="noWorkStatsMessage">
               No work stats available. Please complete some work sessions to see
               the chart.
             </p>
@@ -167,14 +292,6 @@
         <button class="editTimer btn btn-primary btn-lg">Edit</button>
         <button class="startPauseTimer btn btn-primary btn-lg">Start!</button>
         <button class="stopTimer btn btn-primary btn-lg">Stop!</button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-toggle="modal"
-          data-target="#chartModal"
-        >
-          Statistics
-        </button>
       </div>
       <div class="card" id="toDoContainer">
         <h3>Tasks</h3>

@@ -1,6 +1,7 @@
 'use strict';
 import './firebase.js';
 import './workStatsChart.js';
+import './settingsModal.js';
 import './styles.css';
 import { state } from './state.js';
 
@@ -138,9 +139,7 @@ let pausedTime;
 let timerID;
 let timeStart = false;
 let changeTimerFlag = false;
-
-const alarm = new Audio('audio/microwave-sound.mp3');
-alarm.preload = 'auto';
+let alarm = new Audio('audio/microwave-sound.mp3');
 
 const timerDisplay = document.querySelector('#timerDisplay');
 const timerStart = document.querySelector('.startPauseTimer');
@@ -257,7 +256,7 @@ const resetTimer = () => {
   updateProgressBar(0);
   // set mode to next mode
   if (state.mode === 'work') {
-    if ((workCounter + 1) % 4 === 0) {
+    if ((workCounter + 1) % state.longBreakInterval === 0) {
       state.mode = 'longBreak';
     } else {
       state.mode = 'break';
@@ -547,12 +546,19 @@ const loadTimesFromLocalStorage = () => {
   const timerDurationLongBreakLoaded = localStorage.getItem(
     'timerDurationLongBreak'
   );
-  if (timerDurationWorkLoaded === null) {
+  const longBreakIntervalLoaded = localStorage.getItem('longBreakInterval');
+  if (
+    timerDurationWorkLoaded === null ||
+    timerDurationBreakLoaded === null ||
+    timerDurationLongBreakLoaded === null ||
+    longBreakIntervalLoaded === null
+  ) {
     // if not set, set default values
     console.log(
       state.timerDurationBreak,
       state.timerDurationWork,
-      state.timerDurationLongBreak
+      state.timerDurationLongBreak,
+      state.longBreakInterval
     );
     localStorage.setItem('timerDurationWork', state.timerDurationWork);
     localStorage.setItem('timerDurationBreak', state.timerDurationBreak);
@@ -560,12 +566,36 @@ const loadTimesFromLocalStorage = () => {
       'timerDurationLongBreak',
       state.timerDurationLongBreak
     );
+    localStorage.setItem('longBreakInterval', state.longBreakInterval);
     return;
   } else {
     state.timerDurationWork = parseInt(timerDurationWorkLoaded);
     state.timerDurationBreak = parseInt(timerDurationBreakLoaded);
     state.timerDurationLongBreak = parseInt(timerDurationLongBreakLoaded);
+    state.longBreakInterval = parseInt(longBreakIntervalLoaded);
   }
+};
+
+const loadSoundFromLocalStorage = () => {
+  const selectedSound = localStorage.getItem('selectedSound');
+  if (selectedSound) {
+    const parsedSelectedSound = JSON.parse(selectedSound);
+    state.selectedSound = parsedSelectedSound;
+  } else {
+    // set default sound
+    state.selectedSound = 'microwave-sound';
+  }
+
+  setAlarmSound(state.selectedSound);
+};
+
+export const setAlarmSound = (soundName) => {
+  state.selectedSound = soundName;
+  localStorage.setItem('selectedSound', JSON.stringify(soundName));
+  console.log('sound name:', soundName);
+  alarm = new Audio(`audio/${soundName}.mp3`);
+  alarm.preload = 'auto';
+  console.log('Alarm sound set to:', soundName);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -578,6 +608,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTimesFromLocalStorage();
   // update timer display to work duration value
   setMode();
+  // load sound from local storage
+  loadSoundFromLocalStorage();
   // put console log at bottom to make sure it runs after all functions
   console.log(toDoArrId);
   console.log(...state.toDoArr);
